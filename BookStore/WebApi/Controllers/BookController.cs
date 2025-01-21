@@ -39,4 +39,20 @@ public class BookController : ControllerBase
         var bookList = BookList.OrderBy(x => x.Id).ToList<Book>();
         return bookList;
     }
+
+    [HttpGet("{id}")]
+    public Book GetById(int id)
+    {
+        var book = BookList.Where(x => x.Id == id).SingleOrDefault();
+        return book;
+    }
+
+
+
+    [HttpGet]
+    public Book Get([FromQuery] string id)
+    {
+        var book = BookList.Where(x => x.Id == Convert.ToInt32(id)).SingleOrDefault();
+        return book;
+    }
 }
