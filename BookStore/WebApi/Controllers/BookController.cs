@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]s/[action]")]
+[Route("[controller]s")]
 public class BookController : ControllerBase
 {
     private static List<Book> BookList = new List<Book>(){
@@ -49,12 +49,12 @@ public class BookController : ControllerBase
 
 
 
-    [HttpGet]
-    public Book Get([FromQuery] string id)
-    {
-        var book = BookList.Where(x => x.Id == Convert.ToInt32(id)).SingleOrDefault();
-        return book;
-    }
+    // [HttpGet]
+    // public Book Get([FromQuery] string id)
+    // {
+    //     var book = BookList.Where(x => x.Id == Convert.ToInt32(id)).SingleOrDefault();
+    //     return book;
+    // }
 
 
 
@@ -82,6 +82,17 @@ public class BookController : ControllerBase
         book.Genre = updatedBook.Genre.Id != default ? updatedBook.Genre : book.Genre;
         book.PageCount = updatedBook.PageCount != default ? updatedBook.PageCount : book.PageCount;
         book.PublishDate = updatedBook.PublishDate != default ? updatedBook.PublishDate : book.PublishDate;
+        return Ok();
+    }
+
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteBook(int id)
+    {
+        var book = BookList.SingleOrDefault(x => x.Id == id);
+        if (book is null)
+            return BadRequest();
+        BookList.Remove(book);
         return Ok();
     }
 }
