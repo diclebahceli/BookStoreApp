@@ -2,6 +2,7 @@ using System;
 using BookStore.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApi.BookOperations.GetBooks;
 using WebApi.DBOperations;
 
 namespace WebApi.Controllers;
@@ -20,11 +21,12 @@ public class BookController : ControllerBase
 
 
     [HttpGet]
-    public List<Book> GetBooks()
+    public IActionResult GetBooks()
     {
 
-        var bookList = _context.Books.OrderBy(x => x.Id).ToList<Book>();
-        return bookList;
+        GetBooksQuery query = new GetBooksQuery(_context);
+        var result = query.Handle();
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -70,6 +72,7 @@ public class BookController : ControllerBase
         book.Genre = updatedBook.Genre.Id != default ? updatedBook.Genre : book.Genre;
         book.PageCount = updatedBook.PageCount != default ? updatedBook.PageCount : book.PageCount;
         book.PublishDate = updatedBook.PublishDate != default ? updatedBook.PublishDate : book.PublishDate;
+        book.Author = updatedBook.Author != default ? updatedBook.Author : book.Author;
         _context.SaveChanges();
         return Ok();
     }
