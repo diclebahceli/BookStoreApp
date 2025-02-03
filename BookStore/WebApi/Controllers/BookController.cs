@@ -1,8 +1,8 @@
 using System;
 using BookStore.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApi.BookOperations.AddBooks;
+using WebApi.BookOperations.GetBookById;
 using WebApi.BookOperations.GetBooks;
 using WebApi.DBOperations;
 using static WebApi.BookOperations.AddBooks.CreateBookCommand;
@@ -32,10 +32,12 @@ public class BookController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public Book GetById(int id)
+    public IActionResult GetById(int id)
     {
-        var book = _context.Books.Where(x => x.Id == id).SingleOrDefault();
-        return book;
+        var query = new GetBookByIdQuery(_context);
+        query.bookId = id;
+        var book = query.Handle();
+        return Ok(book);
     }
 
 

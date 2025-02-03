@@ -20,11 +20,11 @@ public class GetBooksQuery
         var bookList = _bookStoreDBContext.Books.OrderBy(x => x.Id).Include(x => x.Genre).ToList<Book>();
         var vm = new List<BookViewModel>();
         if (bookList is null)
-            throw new InvalidOperationException("Kitap bulunamadı");
+            throw new InvalidOperationException("Book does not exist");
         foreach (var book in bookList)
         {
             if (book.Genre is null)
-                throw new InvalidOperationException("Kitap türü bulunamadı");
+                throw new InvalidOperationException("Genre does not exist");
             vm.Add(
                 new BookViewModel
                 {
