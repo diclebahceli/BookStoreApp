@@ -2,6 +2,7 @@ using System;
 using BookStore.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.BookOperations.AddBooks;
+using WebApi.BookOperations.DeleteBookCommand;
 using WebApi.BookOperations.GetBookById;
 using WebApi.BookOperations.GetBooks;
 using WebApi.BookOperations.UpdateBooks;
@@ -91,11 +92,9 @@ public class BookController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteBook(int id)
     {
-        var book = _context.Books.SingleOrDefault(x => x.Id == id);
-        if (book is null)
-            return BadRequest();
-        _context.Books.Remove(book);
-        _context.SaveChanges();
+        var command = new DeleteBookCommand(_context);
+        command.id = id;
+        command.Handle();
         return Ok();
     }
 }
