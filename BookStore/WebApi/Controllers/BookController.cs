@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApi.BookOperations.AddBooks;
 using WebApi.BookOperations.GetBookById;
 using WebApi.BookOperations.GetBooks;
+using WebApi.BookOperations.UpdateBooks;
 using WebApi.DBOperations;
 using static WebApi.BookOperations.AddBooks.CreateBookCommand;
 
@@ -72,15 +73,17 @@ public class BookController : ControllerBase
     [HttpPut("{id}")]
     public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
     {
-        var book = _context.Books.SingleOrDefault(x => x.Id == id);
-        if (book is null)
-            return BadRequest();
-        book.Title = updatedBook.Title != default ? updatedBook.Title : book.Title;
-        book.Genre = updatedBook.Genre.Id != default ? updatedBook.Genre : book.Genre;
-        book.PageCount = updatedBook.PageCount != default ? updatedBook.PageCount : book.PageCount;
-        book.PublishDate = updatedBook.PublishDate != default ? updatedBook.PublishDate : book.PublishDate;
-        book.Author = updatedBook.Author != default ? updatedBook.Author : book.Author;
-        _context.SaveChanges();
+        var command = new UpdateBooksCommand(_context);
+        command.id = id;
+        command.updateBooksModel = new UpdateBooksModel
+        {
+            Title = updatedBook.Title,
+            GenreId = updatedBook.GenreId,
+            PageCount = updatedBook.PageCount,
+            PublishDate = updatedBook.PublishDate,
+            Author = updatedBook.Author
+        };
+        command.Handle();
         return Ok();
     }
 
