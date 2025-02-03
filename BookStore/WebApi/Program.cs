@@ -1,4 +1,6 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.EntityFrameworkCore;
 using WebApi.DBOperations;
 
@@ -16,6 +18,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     DataGenerator.Initialize(services);
 }
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

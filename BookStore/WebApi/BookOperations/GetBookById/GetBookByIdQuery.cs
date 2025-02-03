@@ -1,7 +1,9 @@
 using System;
+using AutoMapper;
 using BookStore.Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using WebApi.BookOperations.GetBooks;
 using WebApi.DBOperations;
 
 namespace WebApi.BookOperations.GetBookById;
@@ -9,11 +11,13 @@ namespace WebApi.BookOperations.GetBookById;
 public class GetBookByIdQuery
 {
     private readonly BookStoreDBContext _context;
+    private readonly IMapper mapper;
     public int bookId;
 
-    public GetBookByIdQuery(BookStoreDBContext bookStoreDBContext)
+    public GetBookByIdQuery(BookStoreDBContext bookStoreDBContext, IMapper mapper)
     {
         _context = bookStoreDBContext;
+        this.mapper = mapper;
     }
 
 
@@ -22,14 +26,7 @@ public class GetBookByIdQuery
         var book = _context.Books.Include(x => x.Genre).SingleOrDefault(x => x.Id == bookId);
         if (book is null)
             throw new InvalidOperationException("Book does not exist");
-        return new BookModel
-        {
-            Title = book.Title,
-            Genre = book.Genre.Name,
-            PageCount = book.PageCount,
-            PublishDate = book.PublishDate.Date,
-            Author = book.Author
-        };
+        return mapper.Map<BookModel>(book);
     }
 
 }

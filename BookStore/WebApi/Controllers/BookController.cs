@@ -1,4 +1,5 @@
 using System;
+using AutoMapper;
 using BookStore.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.BookOperations.AddBooks;
@@ -17,10 +18,12 @@ public class BookController : ControllerBase
 {
 
     private readonly BookStoreDBContext _context;
+    private readonly IMapper mapper;
 
-    public BookController(BookStoreDBContext context)
+    public BookController(BookStoreDBContext context, IMapper mapper)
     {
         _context = context;
+        this.mapper = mapper;
     }
 
 
@@ -28,7 +31,7 @@ public class BookController : ControllerBase
     public IActionResult GetBooks()
     {
 
-        GetBooksQuery query = new GetBooksQuery(_context);
+        GetBooksQuery query = new GetBooksQuery(_context, mapper);
         var result = query.Handle();
         return Ok(result);
     }
@@ -40,7 +43,7 @@ public class BookController : ControllerBase
 
         try
         {
-            var query = new GetBookByIdQuery(_context);
+            var query = new GetBookByIdQuery(_context, mapper);
             query.bookId = id;
             res = query.Handle();
         }
@@ -66,7 +69,7 @@ public class BookController : ControllerBase
     [HttpPost]
     public IActionResult AddBook([FromBody] CreateBookModel newBook)
     {
-        var command = new CreateBookCommand(_context);
+        var command = new CreateBookCommand(_context, mapper);
         try
         {
             command.Model = newBook;

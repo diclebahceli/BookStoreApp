@@ -1,7 +1,6 @@
 using System;
+using AutoMapper;
 using BookStore.Domain.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using WebApi.DBOperations;
 
 namespace WebApi.BookOperations.AddBooks;
@@ -10,9 +9,11 @@ public class CreateBookCommand
 {
     private readonly BookStoreDBContext _context;
     public CreateBookModel Model { get; set; }
-    public CreateBookCommand(BookStoreDBContext context)
+    private readonly IMapper mapper;
+    public CreateBookCommand(BookStoreDBContext context, IMapper mapper)
     {
         _context = context;
+        this.mapper = mapper;
     }
 
     public void Handle()
@@ -20,14 +21,16 @@ public class CreateBookCommand
         var book = _context.Books.SingleOrDefault(x => x.Title == Model.Title);
         if (book is not null)
             throw new InvalidOperationException("Book already exist");
-        var newBook = new Book
-        {
-            Title = Model.Title,
-            GenreId = Model.GenreId,
-            PageCount = Model.PageCount,
-            PublishDate = Model.PublishDate.Date,
-            Author = Model.Author
-        };
+
+        var newBook = mapper.Map<Book>(Model);
+        // var newBook = new Book
+        // {
+        //     Title = Model.Title,
+        //     GenreId = Model.GenreId,
+        //     PageCount = Model.PageCount,
+        //     PublishDate = Model.PublishDate.Date,
+        //     Author = Model.Author
+        // };
         _context.Books.Add(newBook);
         _context.SaveChanges();
     }
