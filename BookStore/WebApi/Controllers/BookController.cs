@@ -2,8 +2,10 @@ using System;
 using BookStore.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApi.BookOperations.AddBooks;
 using WebApi.BookOperations.GetBooks;
 using WebApi.DBOperations;
+using static WebApi.BookOperations.AddBooks.CreateBookCommand;
 
 namespace WebApi.Controllers;
 
@@ -48,15 +50,18 @@ public class BookController : ControllerBase
 
 
     [HttpPost]
-    public IActionResult AddBook([FromBody] Book newBook)
+    public IActionResult AddBook([FromBody] CreateBookModel newBook)
     {
-        var book = _context.Books.SingleOrDefault(x => x.Title == newBook.Title);
-        if (book != null)
+        var command = new CreateBookCommand(_context);
+        try
         {
-            return BadRequest();
+            command.Model = newBook;
+            command.Handle();
         }
-        _context.Books.Add(newBook);
-        _context.SaveChanges();
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
         return Ok();
     }
 
