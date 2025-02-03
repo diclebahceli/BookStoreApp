@@ -36,10 +36,20 @@ public class BookController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {
-        var query = new GetBookByIdQuery(_context);
-        query.bookId = id;
-        var book = query.Handle();
-        return Ok(book);
+        BookModel res = new BookModel();
+
+        try
+        {
+            var query = new GetBookByIdQuery(_context);
+            query.bookId = id;
+            res = query.Handle();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        return Ok(res);
     }
 
 
@@ -72,19 +82,20 @@ public class BookController : ControllerBase
 
 
     [HttpPut("{id}")]
-    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+    public IActionResult UpdateBook(int id, [FromBody] UpdateBooksModel updatedBook)
     {
-        var command = new UpdateBooksCommand(_context);
-        command.id = id;
-        command.updateBooksModel = new UpdateBooksModel
+        try
         {
-            Title = updatedBook.Title,
-            GenreId = updatedBook.GenreId,
-            PageCount = updatedBook.PageCount,
-            PublishDate = updatedBook.PublishDate,
-            Author = updatedBook.Author
-        };
-        command.Handle();
+            var command = new UpdateBooksCommand(_context);
+            command.id = id;
+            command.updateBooksModel = updatedBook;
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
         return Ok();
     }
 
@@ -92,9 +103,17 @@ public class BookController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult DeleteBook(int id)
     {
-        var command = new DeleteBookCommand(_context);
-        command.id = id;
-        command.Handle();
+        try
+        {
+            var command = new DeleteBookCommand(_context);
+            command.id = id;
+            command.Handle();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
         return Ok();
     }
 }
