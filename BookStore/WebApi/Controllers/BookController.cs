@@ -1,8 +1,11 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using BookStore.Domain.Entities;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.BookOperations.AddBooks;
+using WebApi.BookOperations.CreateBook;
 using WebApi.BookOperations.DeleteBookCommand;
 using WebApi.BookOperations.GetBookById;
 using WebApi.BookOperations.GetBooks;
@@ -45,6 +48,8 @@ public class BookController : ControllerBase
         {
             var query = new GetBookByIdQuery(_context, mapper);
             query.bookId = id;
+            GetBookByIdQueryValidator validator = new GetBookByIdQueryValidator();
+            validator.ValidateAndThrow(query);
             res = query.Handle();
         }
         catch (Exception ex)
@@ -73,7 +78,17 @@ public class BookController : ControllerBase
         try
         {
             command.Model = newBook;
+            CreateBookCommandValidator validator = new CreateBookCommandValidator();
+            validator.ValidateAndThrow(command);
             command.Handle();
+            // var res = validator.Validate(command);
+
+            // if (!res.IsValid)
+            //     foreach (var item in res.Errors)
+            //         Console.WriteLine("Property: " + item.PropertyName + " Error Message: " + item.ErrorMessage);
+
+            // else
+            //     command.Handle();
         }
         catch (Exception ex)
         {
@@ -92,6 +107,8 @@ public class BookController : ControllerBase
             var command = new UpdateBooksCommand(_context);
             command.id = id;
             command.updateBooksModel = updatedBook;
+            UpdateBooksCommandValidation validator = new UpdateBooksCommandValidation();
+            validator.ValidateAndThrow(command);
             command.Handle();
         }
         catch (Exception ex)
@@ -110,6 +127,8 @@ public class BookController : ControllerBase
         {
             var command = new DeleteBookCommand(_context);
             command.id = id;
+            DeleteBookCommandValidator validator = new DeleteBookCommandValidator();
+            validator.ValidateAndThrow(command);
             command.Handle();
         }
         catch (Exception ex)
