@@ -15,6 +15,29 @@ public class DataGenerator
                 return;
             }
 
+            context.Genres.AddRange(
+                new Genre()
+                {
+                    Id = 1,
+                    Name = "Novel"
+                },
+                new Genre()
+                {
+                    Id = 2,
+                    Name = "Science-Fiction"
+                },
+                new Genre()
+                {
+                    Id = 3,
+                    Name = "Horror"
+                },
+                new Genre()
+                {
+                    Id = 4,
+                    Name = "History"
+                }
+            );
+
             context.Books.AddRange(
                 new Book()
                 {
